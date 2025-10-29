@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Agent",
+  "name": "Sol Agent",
   "version": "40",
-  "description": "Agent",
+  "description": "Sol AI Agent",
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDC0C0AakL+XOcj+PMf24WqoKHA/hhypDQZUUd9sJr/c7cx3nLJS+kaJaB+cz8V3RhPZq01BFeByofLg6Hg6ZNVvBVn3wtGLcNPmuCwMmDiHetTV0oJsFOWs2VznP9py1ww5FFhU+Wmw1CWyLJqnwsIsLLCQyUXAZpVEOLJlOqX1wIDAQAB",
   "permissions": [
     "activeTab",
@@ -15,7 +15,7 @@
     "bookmarks",
     "history",
     "settingsPrivate",
-    "browserOS"
+    "solBrowser"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -39,7 +39,7 @@
         "default": "Ctrl+E",
         "mac": "Command+E"
       },
-      "description": "Toggle the Nxtscape side panel"
+      "description": "Toggle the Sol Browser side panel"
     }
   },
   "content_scripts": [
