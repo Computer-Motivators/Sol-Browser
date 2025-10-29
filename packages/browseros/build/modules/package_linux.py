@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Linux packaging module for BrowserOS (AppImage and .deb)
+Linux packaging module for Sol Browser (AppImage and .deb)
 """
 
 import os
@@ -68,16 +68,16 @@ def copy_browser_files(
         else:
             log_warning(f"  ⚠ File not found: {file}")
 
-    dirs_to_copy = ["locales", "MEIPreload", "BrowserOSServer"]
+    dirs_to_copy = ["locales", "MEIPreload", "SolBrowserServer"]
     for dir_name in dirs_to_copy:
         src = join_paths(out_dir, dir_name)
         if Path(src).exists():
             shutil.copytree(src, join_paths(target_dir, dir_name), dirs_exist_ok=True)
             log_info(f"  ✓ Copied {dir_name}/")
 
-    browseros_path = Path(join_paths(target_dir, ctx.NXTSCAPE_APP_NAME))
-    if browseros_path.exists():
-        browseros_path.chmod(0o755)
+    solbrowser_path = Path(join_paths(target_dir, ctx.NXTSCAPE_APP_NAME))
+    if solbrowser_path.exists():
+        solbrowser_path.chmod(0o755)
 
     sandbox_path = Path(join_paths(target_dir, "chrome_sandbox"))
     if sandbox_path.exists():
@@ -107,18 +107,18 @@ def create_desktop_file(apps_dir: Path, exec_path: str) -> Path:
 
     desktop_content = f"""[Desktop Entry]
 Version=1.0
-Name=BrowserOS
+Name=Sol Browser
 GenericName=Web Browser
-Comment=Browse the World Wide Web
+Comment=Browse the World Wide Web with Sol Browser
 Exec={exec_path} %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
-MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;x-scheme-handler/chrome;video/webm;application/x-xpinstall;
-Icon=browseros
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;x-scheme-handler/sol;video/webm;application/x-xpinstall;
+Icon=solbrowser
 """
 
-    desktop_file = Path(join_paths(apps_dir, "browseros.desktop"))
+    desktop_file = Path(join_paths(apps_dir, "solbrowser.desktop"))
     desktop_file.write_text(desktop_content)
     log_info("  ✓ Created desktop file")
     return desktop_file
@@ -139,7 +139,7 @@ def copy_icon(ctx: BuildContext, icons_dir: Path) -> bool:
         log_warning("  ⚠ Icon not found at resources/icons/product_logo.png")
         return False
 
-    icon_dest = Path(join_paths(icons_dir, "256x256", "apps", "browseros.png"))
+    icon_dest = Path(join_paths(icons_dir, "256x256", "apps", "solbrowser.png"))
     icon_dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(icon_src, icon_dest)
     log_info("  ✓ Copied icon")
@@ -155,7 +155,7 @@ def prepare_appdir(ctx: BuildContext, appdir: Path) -> bool:
     """Prepare the AppDir structure for AppImage"""
     log_info("📁 Preparing AppDir structure...")
 
-    app_root = join_paths(appdir, "opt", "browseros")
+    app_root = join_paths(appdir, "opt", "solbrowser")
     usr_share = join_paths(appdir, "usr", "share")
     icons_dir = join_paths(usr_share, "icons", "hicolor")
     apps_dir = join_paths(usr_share, "applications")
@@ -166,7 +166,7 @@ def prepare_appdir(ctx: BuildContext, appdir: Path) -> bool:
 
     # Create desktop file
     desktop_file = create_desktop_file(
-        apps_dir, f"/opt/browseros/{ctx.NXTSCAPE_APP_NAME}"
+        apps_dir, f"/opt/solbrowser/{ctx.NXTSCAPE_APP_NAME}"
     )
 
     # Copy icon
@@ -174,26 +174,26 @@ def prepare_appdir(ctx: BuildContext, appdir: Path) -> bool:
     copy_icon(ctx, icons_dir)
 
     # AppImage-specific: Copy desktop file to root and update Exec line
-    appdir_desktop = Path(join_paths(appdir, "browseros.desktop"))
+    appdir_desktop = Path(join_paths(appdir, "solbrowser.desktop"))
     shutil.copy2(desktop_file, appdir_desktop)
     desktop_content = appdir_desktop.read_text()
     desktop_content = desktop_content.replace(
-        f"Exec=/opt/browseros/{ctx.NXTSCAPE_APP_NAME} %U", "Exec=AppRun %U"
+        f"Exec=/opt/solbrowser/{ctx.NXTSCAPE_APP_NAME} %U", "Exec=AppRun %U"
     )
     appdir_desktop.write_text(desktop_content)
 
     # AppImage-specific: Copy icon to root
     if icon_src.exists():
-        appdir_icon = Path(join_paths(appdir, "browseros.png"))
+        appdir_icon = Path(join_paths(appdir, "solbrowser.png"))
         shutil.copy2(icon_src, appdir_icon)
 
     # AppImage-specific: Create AppRun script
     apprun_content = f"""#!/bin/sh
 THIS="$(readlink -f "${{0}}")"
 HERE="$(dirname "${{THIS}}")"
-export LD_LIBRARY_PATH="${{HERE}}"/opt/browseros:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${{HERE}}"/opt/solbrowser:$LD_LIBRARY_PATH
 export CHROME_WRAPPER="${{THIS}}"
-"${{HERE}}"/opt/browseros/{ctx.NXTSCAPE_APP_NAME} "$@"
+"${{HERE}}"/opt/solbrowser/{ctx.NXTSCAPE_APP_NAME} "$@"
 """
 
     apprun_file = Path(join_paths(appdir, "AppRun"))
@@ -270,16 +270,16 @@ def create_appimage(ctx: BuildContext, appdir: Path, output_path: Path) -> bool:
 
 
 def create_launcher_script(ctx: BuildContext, bin_dir: Path) -> None:
-    """Create launcher script in /usr/bin/browseros."""
+    """Create launcher script in /usr/bin/solbrowser."""
     bin_dir.mkdir(parents=True, exist_ok=True)
 
     launcher_content = f"""#!/bin/sh
-# BrowserOS launcher script
-export LD_LIBRARY_PATH=/usr/lib/browseros:$LD_LIBRARY_PATH
-exec /usr/lib/browseros/{ctx.NXTSCAPE_APP_NAME} "$@"
+# Sol Browser launcher script
+export LD_LIBRARY_PATH=/usr/lib/solbrowser:$LD_LIBRARY_PATH
+exec /usr/lib/solbrowser/{ctx.NXTSCAPE_APP_NAME} "$@"
 """
 
-    launcher_path = Path(join_paths(bin_dir, "browseros"))
+    launcher_path = Path(join_paths(bin_dir, "solbrowser"))
     launcher_path.write_text(launcher_content)
     launcher_path.chmod(0o755)
     log_info("  ✓ Created launcher script")
@@ -296,17 +296,17 @@ def create_control_file(ctx: BuildContext, debian_dir: Path) -> None:
     # Architecture mapping
     deb_arch = "amd64" if ctx.architecture == "x64" else "arm64"
 
-    control_content = f"""Package: browseros
+    control_content = f"""Package: solbrowser
 Version: {version}
 Section: web
 Priority: optional
 Architecture: {deb_arch}
 Depends: libc6 (>= 2.31), libglib2.0-0, libnss3, libnspr4, libx11-6, libatk1.0-0, libatk-bridge2.0-0, libcups2, libasound2, libdrm2, libgbm1, libpango-1.0-0, libcairo2, libudev1, libxcomposite1, libxdamage1, libxrandr2, libxkbcommon0, libgtk-3-0
-Maintainer: BrowserOS Team <support@browseros.com>
-Homepage: https://www.browseros.com/
-Description: BrowserOS - The open source agentic browser
- BrowserOS is a privacy-focused web browser built on Chromium,
- designed for modern web browsing with AI capabilities.
+Maintainer: Computer Motivators <support@computermotivators.com>
+Homepage: https://computermotivators.com/
+Description: Sol Browser - Privacy-focused web browser by Computer Motivators
+ Sol Browser is a privacy-focused web browser built on Chromium,
+ designed for modern web browsing with integrated Sol AI capabilities.
 """
 
     control_path = Path(join_paths(debian_dir, "control"))
@@ -321,12 +321,12 @@ def create_postinst_script(debian_dir: Path) -> None:
     so we set it in postinst after installation.
     """
     postinst_content = """#!/bin/sh
-# Post-installation script for BrowserOS
+# Post-installation script for Sol Browser
 set -e
 
 # Set SUID bit on chrome_sandbox for sandboxing support
-if [ -f /usr/lib/browseros/chrome_sandbox ]; then
-    chmod 4755 /usr/lib/browseros/chrome_sandbox
+if [ -f /usr/lib/solbrowser/chrome_sandbox ]; then
+    chmod 4755 /usr/lib/solbrowser/chrome_sandbox
 fi
 
 exit 0
@@ -348,16 +348,16 @@ def prepare_debdir(ctx: BuildContext, debdir: Path) -> bool:
     │   └── postinst
     ├── usr/
     │   ├── bin/
-    │   │   └── browseros (launcher script)
-    │   ├── lib/browseros/
+    │   │   └── solbrowser (launcher script)
+    │   ├── lib/solbrowser/
     │   │   └── [all browser files]
     │   └── share/
-    │       ├── applications/browseros.desktop
-    │       └── icons/hicolor/256x256/apps/browseros.png
+    │       ├── applications/solbrowser.desktop
+    │       └── icons/hicolor/256x256/apps/solbrowser.png
     """
     log_info("📁 Preparing .deb directory structure...")
 
-    lib_dir = join_paths(debdir, "usr", "lib", "browseros")
+    lib_dir = join_paths(debdir, "usr", "lib", "solbrowser")
     bin_dir = join_paths(debdir, "usr", "bin")
     share_dir = join_paths(debdir, "usr", "share")
     apps_dir = join_paths(share_dir, "applications")
@@ -372,7 +372,7 @@ def prepare_debdir(ctx: BuildContext, debdir: Path) -> bool:
     create_launcher_script(ctx, bin_dir)
 
     # Create desktop file
-    create_desktop_file(apps_dir, "/usr/bin/browseros")
+    create_desktop_file(apps_dir, "/usr/bin/solbrowser")
 
     # Copy icon
     copy_icon(ctx, icons_dir)
@@ -473,7 +473,7 @@ def package_deb(ctx: BuildContext, package_dir: Path) -> Optional[Path]:
         .replace("_", ".")
     )
     arch_suffix = "amd64" if ctx.architecture == "x64" else "arm64"
-    filename = f"browseros_{version}_{arch_suffix}.deb"
+    filename = f"solbrowser_{version}_{arch_suffix}.deb"
     output_path = Path(join_paths(package_dir, filename))
 
     success = create_deb(ctx, debdir, output_path)
@@ -488,7 +488,7 @@ def package_deb(ctx: BuildContext, package_dir: Path) -> Optional[Path]:
 
 
 def package(ctx: BuildContext) -> bool:
-    """Package BrowserOS for Linux as both AppImage and .deb"""
+    """Package Sol Browser for Linux as both AppImage and .deb"""
     log_info(
         f"📦 Packaging {ctx.NXTSCAPE_APP_BASE_NAME} {ctx.get_nxtscape_chromium_version()} for Linux ({ctx.architecture})"
     )
