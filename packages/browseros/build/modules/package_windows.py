@@ -21,18 +21,18 @@ from utils import (
     IS_WINDOWS,
 )
 
-# BrowserOS Server binaries packaged alongside Chrome that must be signed prior to
+# Sol Browser Server binaries packaged alongside Chrome that must be signed prior to
 # building the installer. Extend this list when new server-side executables are added.
-BROWSEROS_SERVER_BINARIES: List[str] = [
-    "browseros_server.exe",
+SOLBROWSER_SERVER_BINARIES: List[str] = [
+    "solbrowser_server.exe",
     "codex.exe",
 ]
 
 
-def get_browseros_server_binary_paths(build_output_dir: Path) -> List[Path]:
-    """Return absolute paths to BrowserOS Server binaries for signing."""
-    server_dir = build_output_dir / "BrowserOSServer" / "default"
-    return [server_dir / binary for binary in BROWSEROS_SERVER_BINARIES]
+def get_solbrowser_server_binary_paths(build_output_dir: Path) -> List[Path]:
+    """Return absolute paths to Sol Browser Server binaries for signing."""
+    server_dir = build_output_dir / "SolBrowserServer" / "default"
+    return [server_dir / binary for binary in SOLBROWSER_SERVER_BINARIES]
 
 
 def package(ctx: BuildContext) -> bool:
@@ -194,10 +194,10 @@ def sign_binaries(ctx: BuildContext, certificate_name: Optional[str] = None) -> 
     # Get paths to sign
     build_output_dir = join_paths(ctx.chromium_src, ctx.out_dir)
 
-    # STEP 1: Sign chrome.exe and BrowserOS Server binaries BEFORE building mini_installer
+    # STEP 1: Sign chrome.exe and Sol Browser Server binaries BEFORE building mini_installer
     log_info("\nStep 1/3: Signing executables before packaging...")
     binaries_to_sign_first = [build_output_dir / "chrome.exe"]
-    binaries_to_sign_first.extend(get_browseros_server_binary_paths(build_output_dir))
+    binaries_to_sign_first.extend(get_solbrowser_server_binary_paths(build_output_dir))
 
     # Check which binaries exist
     existing_binaries = []

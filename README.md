@@ -1,134 +1,213 @@
-<div align="center">
-<img width="693" height="379" alt="github-banner" src="https://github.com/user-attachments/assets/1e37941c-4dbc-4662-9c8c-3bbe9971301d" />
+# Sol Browser
 
-<br></br>
-[![Discord](https://img.shields.io/badge/Discord-Join%20us-blue)](https://discord.gg/YKwjt5vuKr)
-[![Slack](https://img.shields.io/badge/Slack-Join%20us-4A154B?logo=slack&logoColor=white)](https://dub.sh/browserOS-slack)
-[![Twitter](https://img.shields.io/twitter/follow/browserOS_ai?style=social)](https://twitter.com/browseros_ai)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-<br></br>
-<a href="https://files.browseros.com/download/BrowserOS.dmg">
-  <img src="https://img.shields.io/badge/Download-macOS-black?style=flat&logo=apple&logoColor=white" alt="Download for macOS (beta)" />
-</a>
-<a href="https://files.browseros.com/download/BrowserOS_installer.exe">
-  <img src="https://img.shields.io/badge/Download-Windows-0078D4?style=flat&logo=windows&logoColor=white" alt="Download for Windows (beta)" />
-</a>
-<a href="https://files.browseros.com/download/BrowserOS.AppImage">
-  <img src="https://img.shields.io/badge/Download-Linux-FCC624?style=flat&logo=linux&logoColor=black" alt="Download for Linux (beta)" />
-</a>
-<a href="https://cdn.browseros.com/download/BrowserOS.deb">
-  <img src="https://img.shields.io/badge/Download-Debian-D70A53?style=flat&logo=debian&logoColor=white" alt="Download Debian package" />
-</a>
-<br />
-</div>
+**A privacy-focused Chromium-based browser by Computer Motivators**
 
-## 
-🌐 BrowserOS is an open-source chromium fork that runs AI agents natively. **Your open-source, privacy-first alternative to ChatGPT Atlas, Perplexity Comet, Dia**.
+Sol Browser is an open-source web browser built on Chromium, designed with privacy and integration with Sol AI as core principles. This repository contains both the Chromium build system and browser-specific features.
 
-🔒 Privacy first - use your own API keys or run local models with Ollama. Your data stays on your computer.
+## Repository Structure
 
-💡 Join our [Discord](https://discord.gg/YKwjt5vuKr) or [Slack](https://dub.sh/browserOS-slack) and help us build! Have feature requests? [Suggest here](https://github.com/browseros-ai/BrowserOS/issues/99).
+This is a monorepo with two main components:
 
-## Quick start
+### 1. Browser (`packages/browseros`)
+The Chromium build system containing:
+- **Build Scripts** - Python-based build automation (`build/`)
+- **Chromium Patches** - Modifications to Chromium source (`chromium_patches/`)
+- **Resources** - Icons, extensions, and assets (`resources/`)
+- **Configuration** - Build configurations for different platforms (`build/config/`)
 
-1. Download and install BrowserOS:
-   - [macOS](https://files.browseros.com/download/BrowserOS.dmg)
-   - [Windows](https://files.browseros.com/download/BrowserOS_installer.exe)
-   - [Linux (AppImage)](https://files.browseros.com/download/BrowserOS.AppImage)
-   - [Linux (Debian)](https://cdn.browseros.com/download/BrowserOS.deb)
+### 2. Agent Extension (Coming Soon)
+AI-powered browser extension with Sol integration (planned for `packages/solbrowser-agent/`)
 
-2. Import your Chrome data (optional)
+## Technical Overview
 
-3. Connect your AI provider (OpenAI, Anthropic, or local models via Ollama/LMStudio)
+### Core Architecture
 
-4. Start automating!
+Sol Browser is built by:
+1. Fetching Chromium source code (see [Chromium Version](packages/browseros/CHROMIUM_VERSION))
+2. Applying custom patches for branding and features
+3. Building with platform-specific configurations
+4. Packaging for distribution (AppImage, .deb, .dmg, .exe)
 
-## What makes BrowserOS special
-- 🏠 Feels like home - same familiar interface as Google Chrome, works with all your extensions
-- 🤖 AI agents that run on YOUR browser, not in the cloud
-- 🔒 Privacy first - bring your own keys or use local models with Ollama. Your browsing history stays on your computer
-- 🚀 Open source and community driven - see exactly what's happening under the hood
-- 🤝 BrowserOS as MCP server - you can install our MCP server and use the browser from within `claude-code` or `gemini-cli`.
-- 🛡️ (coming soon) Built-in AI ad blocker that works across more scenarios!  
+### Key Technologies
 
-## Demos
+- **Language**: C++ (Chromium core), Python (build system), TypeScript (extensions)
+- **Build System**: GN (Generate Ninja) + Ninja
+- **Platforms**: Linux (x64, ARM64), macOS (x64, ARM64, Universal), Windows (x64)
+- **Package Formats**: AppImage, Debian (.deb), DMG, Windows Installer
 
-### 🤖 BrowserOS agent in action
-[![BrowserOS agent in action](docs/videos/browserOS-agent-in-action.gif)](https://www.youtube.com/watch?v=SoSFev5R5dI)
-<br/><br/>
+## Getting Started
 
-### 🎇 Install [BrowserOS as MCP](https://docs.browseros.com/browseros-mcp/how-to-guide) and control it from `claude-code`
+### Prerequisites
 
-https://github.com/user-attachments/assets/c725d6df-1a0d-40eb-a125-ea009bf664dc
+**For Browser Development:**
+- ~100GB disk space (Chromium source)
+- 16GB+ RAM recommended
+- Platform-specific tools:
+  - Linux: `build-essential`, Python 3.8+
+  - macOS: Xcode Command Line Tools
+  - Windows: Visual Studio Build Tools
 
-<br/><br/>
+### Quick Start - Building the Browser
 
-### 💬 Use BrowserOS to chat
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Computer-Motivators/Sol-Browser.git
+   cd Sol-Browser
+   ```
 
-https://github.com/user-attachments/assets/726803c5-8e36-420e-8694-c63a2607beca
+2. **Fetch Chromium source** (one-time setup)
+   
+   Follow [Chromium's official guide](https://www.chromium.org/developers/how-tos/get-the-code/) for your platform. This downloads ~100GB and takes 2-3 hours.
 
-<br/><br/>
+3. **Build Sol Browser**
+   ```bash
+   cd packages/browseros
+   
+   # Linux
+   python build/build.py \
+     --config build/config/release.linux.yaml \
+     --chromium-src /path/to/chromium/src \
+     --build
+   
+   # macOS
+   python build/build.py \
+     --config build/config/release.macos.yaml \
+     --chromium-src /path/to/chromium/src \
+     --build
+   
+   # Windows
+   python build/build.py \
+     --config build/config/release.windows.yaml \
+     --chromium-src /path/to/chromium/src \
+     --build
+   ```
 
-### ⚡ Use BrowserOS to scrape data
+4. **Run the browser**
+   
+   The built browser will be in `chromium/src/out/Default_<arch>/`
 
-https://github.com/user-attachments/assets/9f038216-bc24-4555-abf1-af2adcb7ebc0
+For detailed build instructions, see [docs/BUILD.md](docs/BUILD.md).
 
-<br/><br/>
+## Key Features
 
-## Why We're Building BrowserOS
+### Privacy-First Design
+- No Google tracking or analytics
+- Local-first data storage
+- User-controlled AI integration
 
-For the first time since Netscape pioneered the web in 1994, AI gives us the chance to completely reimagine the browser. We've seen tools like Cursor deliver 10x productivity gains for developers—yet everyday browsing remains frustratingly archaic.
+### Sol AI Integration
+- Default search: https://computermotivators.com/app/sol
+- New tab page: https://computermotivators.com/app/sol
+- Sol-powered browsing assistance
 
-You're likely juggling 70+ tabs, battling your browser instead of having it assist you. Routine tasks, like ordering something from amazon or filling a form should be handled seamlessly by AI agents.
+### URL Schema
+Uses `sol://` instead of `chrome://` for internal pages:
+- `sol://settings`
+- `sol://extensions`
+- `sol://version`
 
-At BrowserOS, we're convinced that AI should empower you by automating tasks locally and securely—keeping your data private. We are building the best browser for this future!
+## Building Packages
 
-## How we compare
+### Linux
+```bash
+python build/build.py \
+  --config build/config/release.linux.yaml \
+  --chromium-src /path/to/chromium/src \
+  --build --package
+```
 
-<details>
-<summary><b>vs Chrome</b></summary>
-<br>
-While we're grateful for Google open-sourcing Chromium, but Chrome hasn't evolved much in 10 years. No AI features, no automation, no MCP support.
-</details>
+Creates:
+- `SolBrowser.AppImage` - Portable AppImage
+- `solbrowser_<version>_amd64.deb` - Debian package
 
-<details>
-<summary><b>vs Brave</b></summary>
-<br>
-We love what Brave started, but they've spread themselves too thin with crypto, search, VPNs. We're laser-focused on AI-powered browsing.
-</details>
+### macOS
+```bash
+python build/build.py \
+  --config build/config/release.macos.yaml \
+  --chromium-src /path/to/chromium/src \
+  --build --package
+```
 
-<details>
-<summary><b>vs Arc/Dia</b></summary>
-<br>
-Many loved Arc, but it was closed source. When they abandoned users, there was no recourse. We're 100% open source - fork it anytime!
-</details>
+Creates:
+- `Sol Browser_<version>_<arch>.dmg` - DMG installer
 
-<details>
-<summary><b>vs Perplexity Comet</b></summary>
-<br>
-They're a search/ad company. Your browser history becomes their product. We keep everything local.
-</details>
+### Windows
+```bash
+python build/build.py \
+  --config build/config/release.windows.yaml \
+  --chromium-src /path/to/chromium/src \
+  --build --package
+```
+
+Creates:
+- `SolBrowser_installer.exe` - Windows installer
 
 ## Contributing
 
-We'd love your help making BrowserOS better!
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Development setup
+- Code standards
+- Contribution workflow
+- Signing the CLA
 
-- 🐛 [Report bugs](https://github.com/nxtscape/nxtscape/issues)
-- 💡 [Suggest features](https://github.com/browseros-ai/BrowserOS/issues/99)
-- 💬 [Join Discord](https://discord.gg/YKwjt5vuKr)
-- 🐦 [Follow on Twitter](https://x.com/browserOS_ai)
+### Quick Contribution Guide
 
-## License
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a Pull Request
 
-BrowserOS is open source under the [AGPL-3.0 license](LICENSE).
+## Repository Information
 
-## Stargazers
-Thank you to all our supporters!
+- **Owner**: Computer Motivators
+- **Repository**: https://github.com/Computer-Motivators/Sol-Browser
+- **License**: AGPL-3.0 (see [LICENSE](LICENSE))
+- **Issues**: https://github.com/Computer-Motivators/Sol-Browser/issues
 
-[![Star History Chart](https://api.star-history.com/svg?repos=browseros-ai/BrowserOS&type=Date)](https://www.star-history.com/#browseros-ai/BrowserOS&Date)
+## Version Information
 
-## 
+- **Chromium Version**: See [CHROMIUM_VERSION](packages/browseros/CHROMIUM_VERSION)
+- **Sol Browser Version**: See [build/config/NXTSCAPE_VERSION](packages/browseros/build/config/NXTSCAPE_VERSION)
 
-<p align="center">
-Built with ❤️ from San Francisco
-</p>
+## System Requirements
+
+### Minimum
+- **OS**: Linux (Ubuntu 20.04+), macOS 11+, Windows 10+
+- **RAM**: 4GB
+- **Disk**: 500MB
+
+### Recommended
+- **RAM**: 8GB+
+- **Disk**: 1GB+
+
+## Security
+
+For security-related information, see [SECURITY.md](SECURITY.md).
+
+To report security vulnerabilities, email: security@computermotivators.com
+
+## Support
+
+- **Documentation**: https://github.com/Computer-Motivators/Sol-Browser/tree/main/docs
+- **Issues**: https://github.com/Computer-Motivators/Sol-Browser/issues
+- **Email**: support@computermotivators.com
+
+## Build Status
+
+Builds are tested on:
+- Ubuntu 22.04 LTS (x64, ARM64)
+- macOS 13+ (x64, ARM64)  
+- Windows 11 (x64)
+
+## Acknowledgments
+
+Sol Browser is built on top of:
+- **Chromium** - The open-source browser project
+- **depot_tools** - Google's build tools
+
+Special thanks to the open-source community for making this possible.
+
+---
+
+**Built with privacy in mind by Computer Motivators**

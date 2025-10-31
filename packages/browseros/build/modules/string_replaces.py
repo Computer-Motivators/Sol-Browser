@@ -14,17 +14,20 @@ from utils import log_info, log_success, log_error, log_warning
 branding_replacements = [
     (
         r"The Chromium Authors. All rights reserved.",
-        r"The BrowserOS Authors. All rights reserved.",
+        r"Computer Motivators. All rights reserved.",
     ),
     (
         r"Google LLC. All rights reserved.",
-        r"The BrowserOS Authors. All rights reserved.",
+        r"Computer Motivators. All rights reserved.",
     ),
-    (r"The Chromium Authors", r"BrowserOS Software Inc"),
-    (r"Google Chrome", r"BrowserOS"),
-    (r"(Google)(?! Play)", r"BrowserOS"),
-    (r"Chromium", r"BrowserOS"),
-    (r"Chrome", r"BrowserOS"),
+    (r"The Chromium Authors", r"Computer Motivators"),
+    (r"The BrowserOS Authors", r"Computer Motivators"),
+    (r"BrowserOS Software Inc", r"Computer Motivators"),
+    (r"Google Chrome", r"Sol Browser"),
+    (r"(Google)(?! Play)", r"Sol Browser"),
+    (r"BrowserOS", r"Sol Browser"),
+    (r"Chromium", r"Sol Browser"),
+    (r"Chrome", r"Sol Browser"),
 ]
 
 # List of files to apply replacements to
